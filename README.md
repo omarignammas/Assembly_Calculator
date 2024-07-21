@@ -34,19 +34,20 @@ Explication du Code Assembly :
     jmp error       ;si l'utilisateur entre une autre operation different que  les operations disponibles
 
 
-chaque procedure, j'ecrit sont script en echangant le valeur entre les differents registres .
-l'utilisation de differents operation de l'assembleur comme mul , add et div  .
-j'utilise aussi d'autres procedure qui utilise des interruptions aidants comme:
-etq:           
+    ;chaque procedure, j'ecrit sont script en echangant le valeur entre les differents registres .
+    ;l'utilisation de differents operation de l'assembleur comme mul , add et div  .
+    ;j'utilise aussi d'autres procedure qui utilise des interruptions aidants comme:
+    
+    etq:           
     ;lire l'operation saisi
     mov al,0h
     mov dx,offset op1    ; message d'operation
     mov ah,09h           ; interruption d'affichege d'un message
     int 21h
- comme l'affichage du message de menu qui introduit les operations disponibles
+    ;comme l'affichage du message de menu qui introduit les operations disponibles
 
-;recupuration d'un variable d'un interruption et la stocker dans num1  
-mov dx,offset mssge1
+    ;recupuration d'un variable d'un interruption et la stocker dans num1  
+    mov dx,offset mssge1
     mov ah, 09        ;interruption d'affichage
     int 21H
     mov ah, 01        ;interruption de recupuration du key d'entre et la stocker sous code ASCUI dans le registre al
@@ -54,36 +55,36 @@ mov dx,offset mssge1
     sub al, 30h       ;convertir le code ASCUI a un nombre ,par soustraction de 30h cad 48 en decimal
     mov num1, al      ;stocker le nombre entrer dans une variable
 
-;procedure d'affichage d'un resultat calculee  
-affiche:
-mov al,0h
-mov al,res    ;stocker le resultat calculer dans al
-add al,30h    ; apres l'affichage du resultat du calcul,on doit d'abord le convertir en ASCUI apres l'afficher.
-mov dl,al     ; stocker le resultat dans dl pour l'afficher par une interruption
-mov ah,02h    ;afficher le resultat de deux chiffres, chiffre par chiffre
-int 21h
-jmp etq
-;La procédure Convertir a pour objectif de convertir un nombre représenté 
-par une valeur ASCII en son équivalent en chaîne de caractères ASCII 
-représentant les chiffres du nombre. Cette procédure utilise la division 
-et la conversion ASCII pour accomplir cette tâche,
-c'ect pour cela j'ai l'introduire dans presque tous mes procedures d'operations.
-Convertir:     
-push cx        ; Sauvegarde la valeur du registre CX sur la pile. CX est utilisé comme compteur dans la division ultérieure.
-mov cl,10      ;initialisation du registre par 10 , Cela représente la base décimale dans laquelle le nombre doit être converti.
-xor ah,        ;Initialise le registre AH à zéro. Il sera utilisé comme le quotient de la division.
-div cl         ;Divise le contenu des registres AX par CL. AX contient les chiffres ASCII du nombre, et CL représente la base décimale (10). Le résultat de la division est stocké dans AX (quotient) et AH (reste).
-add ax, 3030h  ;Ajoute la valeur ASCII de '0' (30h) à chaque chiffre du quotient pour obtenir le chiffre ASCII correspondant. 
-pop cx          ; Restaure la valeur précédemment sauvegardée du registre CX à partir de la pile.
-mov bl,ah
-mov dl,al
-mov ah,02h      ; Configure le registre AH avec la fonction d'affichage de caractère DOS.
-int 21h         ;affiche le caractère représenté par la valeur ASCII de DL
-mov al,bl 
-mov dl,al
-mov ah,02h      ;configure a nouveau le registre pour afficher le douxieme chiffre
-int 21h 
-==> en resumee cette proc utilise une division répétée par la base 10 pour extraire chaque chiffre ,et affiche chaque chiffre convertit tout seule. 
+    ;procedure d'affichage d'un resultat calculee  
+    affiche:
+    mov al,0h
+    mov al,res    ;stocker le resultat calculer dans al
+    add al,30h    ; apres l'affichage du resultat du calcul,on doit d'abord le convertir en ASCUI apres l'afficher.
+    mov dl,al     ; stocker le resultat dans dl pour l'afficher par une interruption
+    mov ah,02h    ;afficher le resultat de deux chiffres, chiffre par chiffre
+    int 21h
+    jmp etq
+    ;La procédure Convertir a pour objectif de convertir un nombre représenté 
+    par une valeur ASCII en son équivalent en chaîne de caractères ASCII 
+    représentant les chiffres du nombre. Cette procédure utilise la division 
+    et la conversion ASCII pour accomplir cette tâche,
+    ;c'ect pour cela j'ai l'introduire dans presque tous mes procedures d'operations.
+    Convertir:     
+    push cx        ; Sauvegarde la valeur du registre CX sur la pile. CX est utilisé comme compteur dans la division ultérieure.
+    mov cl,10      ;initialisation du registre par 10 , Cela représente la base décimale dans laquelle le nombre doit être converti.
+    xor ah,        ;Initialise le registre AH à zéro. Il sera utilisé comme le quotient de la division.
+    div cl         ;Divise le contenu des registres AX par CL. AX contient les chiffres ASCII du nombre, et CL représente la base décimale (10). Le résultat de la division est stocké dans AX (quotient) et AH (reste).
+    add ax, 3030h  ;Ajoute la valeur ASCII de '0' (30h) à chaque chiffre du quotient pour obtenir le chiffre ASCII correspondant. 
+    pop cx          ; Restaure la valeur précédemment sauvegardée du registre CX à partir de la pile.
+    mov bl,ah
+    mov dl,al
+    mov ah,02h      ; Configure le registre AH avec la fonction d'affichage de caractère DOS.
+    int 21h         ;affiche le caractère représenté par la valeur ASCII de DL
+    mov al,bl 
+    mov dl,al
+    mov ah,02h      ;configure a nouveau le registre pour afficher le douxieme chiffre
+    int 21h 
+    ==> en resumee cette proc utilise une division répétée par la base 10 pour extraire chaque chiffre ,et affiche chaque chiffre convertit tout seule. 
 ---------------------------------------------------------------------------------------------------------------------------------------------------
 
 Les difficultés que j'ai face durant l'implementation de ce programme :
